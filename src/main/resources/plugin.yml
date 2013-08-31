@@ -1,0 +1,11 @@
+name: ${project.name}
+author: ${project.authors}
+version: ${project.version}
+main: ${project.main}
+
+commands:
+  bless:
+    usage: /<command>
+    description: blessed the item in your hand.
+    default: op
+    permission: blesseditems.command.bless
