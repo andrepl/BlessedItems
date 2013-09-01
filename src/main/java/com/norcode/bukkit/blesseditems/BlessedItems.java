@@ -77,6 +77,7 @@ public class BlessedItems extends JavaPlugin implements Listener  {
         PlayerInventory inv = p.getInventory();
 
         ItemStack s;
+
         HashMap<Integer, ItemStack> blessed = new HashMap<Integer, ItemStack>();
         for (int i=0; i<inv.getSize(); i++) {
             s = inv.getItem(i);
@@ -84,6 +85,8 @@ public class BlessedItems extends JavaPlugin implements Listener  {
             if (playerName != null && event.getEntity().getName().equals(playerName)) {
                 blessed.put(i, s);
                 inv.remove(i);
+                event.getDrops().remove(s);
+            } else if (s != null && s.getType().equals(Material.GOLD_NUGGET)) {
                 event.getDrops().remove(s);
             }
         }
@@ -160,7 +163,6 @@ public class BlessedItems extends JavaPlugin implements Listener  {
         return stack;
     }
 
-
     @EventHandler(ignoreCancelled=true, priority= EventPriority.HIGHEST)
     public void onInventoryClick(final InventoryClickEvent event) {
         getServer().getScheduler().runTaskLater(this, new Runnable() {
@@ -182,7 +184,7 @@ public class BlessedItems extends JavaPlugin implements Listener  {
                                 containerField.setAccessible(true);
                                 ContainerAnvil anvil = (ContainerAnvil) containerField.get(nmsInv);
 
-                                anvil.a = 10; // TODO XP COST
+                                anvil.a = CraftItemStack.asNMSCopy(first).getRepairCost() + getConfig().getInt("xp-cost", 1); // TODO XP COST
                                 ItemMeta meta = resultStack.getItemMeta();
                                 if (meta == null) {
                                     meta = getServer().getItemFactory().getItemMeta(first.getType());
@@ -196,7 +198,6 @@ public class BlessedItems extends JavaPlugin implements Listener  {
                                 resultStack.setItemMeta(meta);
                                 ((CraftInventoryAnvil)ai).getResultInventory().setItem(0, CraftItemStack.asNMSCopy(resultStack));
                                 ((CraftPlayer) player).getHandle().setContainerData(anvil, 0, anvil.a);
-
                             } catch (NoSuchFieldException e) {
                                 e.printStackTrace();
                             } catch (SecurityException e) {
